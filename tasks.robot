@@ -14,7 +14,8 @@ Library    RPA.Archive
 *** Tasks ***
 Order robots from RobotSpareBin Industries Inc
     Open the robot order website
-    Get Orders
+    ${orders}=    Get Orders
+    Make Orders    ${orders}
     Archive Orders with ZIP
 
 *** Variables ***
@@ -28,12 +29,17 @@ Open the robot order website
 Get Orders
     Download    url=https://robotsparebinindustries.com/orders.csv    overwrite=${True}
     ${orders}=    Read table from CSV     path=orders.csv    header=${True}
+    RETURN    ${orders}
+
+Make Orders
+    [Arguments]    ${orders}
     FOR    ${order}    IN    @{orders}
         Wait Until Keyword Succeeds
         ...    ${GLOBAL_RETRY_AMOUNT}
         ...    ${GLOBAL_RETRY_INTERVAL}
         ...    Fill Form    ${order}
     END
+
 
 Fill Form
     [Arguments]    ${order}
